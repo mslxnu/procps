@@ -12,6 +12,10 @@ AM_CPPFLAGS = \
 	-DLOCALEDIR=\"$(localedir)\" \
 	@HARDEN_CFLAGS@
 
+if IS_APPLE
+AM_CPPFLAGS += -I$(top_builddir)/compat
+endif
+
 AM_LDFLAGS = @HARDEN_LDFLAGS@
 
 PACKAGE_VERSION = @PACKAGE_VERSION@
@@ -27,7 +31,6 @@ AM_CFLAGS = -Ilibrary/include
 LDADD = ./library/libproc2.la $(CYGWINFLAGS)
 
 if IS_APPLE
-AM_CFLAGS += -DMACOS_SPECIFIC_FLAG
 AM_CFLAGS += -I/opt/homebrew/opt/epoll-shim/include/libepoll-shim -I$(top_builddir)/compat
 AM_LDFLAGS += -L/opt/homebrew/opt/epoll-shim/lib -lepoll-shim
 endif
@@ -386,7 +389,6 @@ src_ps_pscommand_SOURCES =  \
 	local/fileutils.c \
 	local/signals.c \
 	local/strutils.c
-
 
 # Test programs required for dejagnu or standalone testing
 check_PROGRAMS = \

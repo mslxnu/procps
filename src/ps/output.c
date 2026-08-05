@@ -72,6 +72,10 @@
 #include <sys/resource.h>
 #include <sys/types.h>
 
+#if defined(__APPLE__)
+#include <apple/hugetlb.h>
+#endif
+
 #include "c.h"
 
 #include "common.h"

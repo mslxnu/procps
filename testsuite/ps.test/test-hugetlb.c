@@ -35,6 +35,10 @@
 #include <string.h>
 #include <sys/mman.h>
 
+#if defined(__APPLE__)
+#include <apple/hugetlb.h>
+#endif
+
 #define LENGTH (2*1024*1024)
 
 void usage(const char *progname, const char *msg)
@@ -59,11 +63,7 @@ int main(int argc, const char *argv[])
         usage(argv[0], "Invalid size");
 
     if (MAP_FAILED == (addr = mmap(NULL, (kbytes*1024), (PROT_READ | PROT_WRITE),
-#if defined(__APPLE__)
-                    (MAP_PRIVATE | MAP_ANONYMOUS), 0, 0))) {
-#else
                     (MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB), 0, 0))) {
-#endif
         perror("mmap");
         exit(EXIT_FAILURE);
     }

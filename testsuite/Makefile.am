@@ -10,6 +10,10 @@ test_schedbatch_SOURCES = ps.test/test-schedbatch.c
 
 test_hugetlb_SOURCES = ps.test/test-hugetlb.c
 
+if IS_APPLE
+test_hugetlb_CPPFLAGS = -I$(top_builddir)/compat
+endif
+
 test_zombie_SOURCES = ps.test/test-zombie.c
 
 if LINUX
