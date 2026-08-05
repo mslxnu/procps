@@ -11,6 +11,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
+#if defined(__APPLE__)
+#include <pthread.h>
+#endif
 #include <sched.h>
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -31,7 +34,11 @@ int main(int argc, const char *argv[])
 	}
 	sp.sched_priority = 0;
 #ifdef SCHED_BATCH
+#if defined(__APPLE__)
+	if (pthread_setschedparam(pthread_self(), SCHED_BATCH, &sp)) {
+#else
 	if (sched_setscheduler(0, SCHED_BATCH, &sp)) {
+#endif
 		perror("sched_setscheduler(0,SCHED_BATCH,{.sched_priority=0}");
 	}
 #endif /* SCHED_BATCH */

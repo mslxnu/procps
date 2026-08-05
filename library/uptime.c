@@ -44,6 +44,11 @@
 #include "procps-private.h"
 #include "pids.h"
 
+#if defined(__APPLE__)
+#include <apple/time.h>
+#include <apple/utmp.h>
+#endif
+
 #define UPTIME_FILE "/proc/uptime"
 
 #define UPTIME_BUFLEN 256

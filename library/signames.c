@@ -42,6 +42,10 @@
 #include "misc.h"
 #include "procps-private.h"
 
+#if defined(__APPLE__)
+#include <apple/signal.h>
+#endif
+
 /* For libraries like musl */
 #ifndef __SIGRTMIN
 #define __SIGRTMIN SIGRTMIN

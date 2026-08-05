@@ -26,6 +26,12 @@ SUBDIRS = \
 AM_CFLAGS = -Ilibrary/include
 LDADD = ./library/libproc2.la $(CYGWINFLAGS)
 
+if IS_APPLE
+AM_CFLAGS += -DMACOS_SPECIFIC_FLAG
+AM_CFLAGS += -I/opt/homebrew/opt/epoll-shim/include/libepoll-shim -I$(top_builddir)/compat
+AM_LDFLAGS += -L/opt/homebrew/opt/epoll-shim/lib -lepoll-shim
+endif
+
 if CYGWIN
 AM_LDFLAGS += ./library/libproc2.la $(CYGWINFLAGS)
 endif
@@ -234,6 +240,11 @@ src_top_top_SOURCES += local/strverscmp.c
 endif
 
 src_top_top_CFLAGS = @NCURSES_CFLAGS@
+
+if IS_APPLE
+src_top_top_CFLAGS += -I$(top_builddir)/compat
+endif
+
 src_top_top_LDADD = $(LDADD) @NCURSES_LIBS@ $(DL_LIB)
 endif
 
@@ -298,8 +309,12 @@ endif
 
 library_libproc2_la_LDFLAGS = \
 	-version-info $(LIBproc2_CURRENT):$(LIBproc2_REVISION):$(LIBproc2_AGE) \
-	-no-undefined \
-	-Wl,--version-script=$(top_srcdir)/library/libproc2.sym
+	-no-undefined
+
+if LINUX
+library_libproc2_la_LDFLAGS += \
+    -Wl,--version-script=$(top_srcdir)/library/libproc2.sym
+endif
 
 library_libproc2_la_SOURCES = \
 	library/capname.c \

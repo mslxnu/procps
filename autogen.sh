@@ -3,6 +3,9 @@
 # Helps generate autoconf/automake stuff, when code is checked
 # out from SCM.
 
+HOST_OS=$(uname)
+echo "Host operating system: ${HOST_OS}"
+
 SRCDIR=$(dirname ${0})
 test -z "${SRCDIR}" && SRCDIR=.
 
@@ -15,30 +18,61 @@ test -f autogen.sh || {
 	DIE=1
 }
 
+if [ ${HOST_OS} == "Darwin" ];then
+	EPOLL_SHIM=/opt/homebrew/opt/epoll-shim
+	if [ ! -d $EPOLL_SHIM ];then
+		echo "You must have epoll-shim installed to generate procps-ng build system."
+		echo "  $ brew install epoll-shim"
+		DIE=1
+	fi
+fi
+
 (autopoint --version) < /dev/null > /dev/null 2>&1 || {
 	echo "You must have autopoint installed to generate procps-ng build system."
 	echo "The autopoint command is part of the GNU gettext package."
+	if [ ${HOST_OS} == "Darwin" ];then
+		echo "  $ brew install gettext"
+	fi
 	DIE=1
 }
 
 (autoconf --version) < /dev/null > /dev/null || {
 	echo "You must have autoconf installed to generate procps-ng build system."
+	if [ ${HOST_OS} == "Darwin" ];then
+		echo "  $ brew install autoconf"
+	fi
 	DIE=1
 }
 (autoheader --version) < /dev/null > /dev/null || {
 	echo "You must have autoheader installed to generate procps-ng build system."
 	echo "The autoheader command is part of the GNU autoconf package."
+	if [ ${HOST_OS} == "Darwin" ];then
+		echo "  $ brew install autoconf"
+	fi
 	DIE=1
 }
 (automake --version) < /dev/null > /dev/null || {
 	echo "You must have automake installed to generate procps-ng build system."
+	if [ ${HOST_OS} == "Darwin" ];then
+		echo "  $ brew install automake"
+	fi
 	DIE=1
 }
 
-LTVER=$(libtoolize --version | awk '/^libtoolize/ { print $4 }')
+if [ ${HOST_OS} == "Darwin" ];then
+	LIBTOOLIZE=glibtoolize
+else
+	LIBTOOLIZE=libtoolize
+fi
+
+LTVER=$(${LIBTOOLIZE} --version | awk '/libtoolize/ { print $4 }')
 LTVER=${LTVER:-"none"}
 test ${LTVER##2.} = "${LTVER}" && {
 	echo "You must have libtoolize version >= 2.x.x, but you have ${LTVER}."
+	echo "The libtoolize command is part of the GNU libtool package."
+	if [ ${HOST_OS} == "Darwin" ];then
+		echo "  $ brew install libtool"
+	fi
 	DIE=1
 }
 
@@ -52,7 +86,10 @@ echo "   aclocal:    $(aclocal --version | head -1)"
 echo "   autoconf:   $(autoconf --version | head -1)"
 echo "   autoheader: $(autoheader --version | head -1)"
 echo "   automake:   $(automake --version | head -1)"
-echo "   libtoolize: $(libtoolize --version | head -1)"
+echo "   libtoolize: $(${LIBTOOLIZE} --version | head -1)"
+if [ $HOST_OS = "Darwin" ];then
+	echo "   epoll-shim: $EPOLL_SHIM"
+fi
 
 rm -rf autom4te.cache
 
@@ -64,7 +101,7 @@ if ! grep -q datarootdir po/Makefile.in.in; then
 	sed -i -e 's/^datadir *=\(.*\)/datarootdir = @datarootdir@\
 datadir = @datadir@/g' po/Makefile.in.in
 fi
-libtoolize --force ${LT_OPTS}
+${LIBTOOLIZE} --force ${LT_OPTS}
 aclocal -I m4 ${AL_OPTS}
 autoconf ${AC_OPTS}
 autoheader ${AH_OPTS}

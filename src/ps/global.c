@@ -32,7 +32,9 @@
 
 #include <sys/ioctl.h>
 #include <sys/stat.h>
+#if !defined(__APPLE__)
 #include <sys/sysmacros.h>
+#endif
 #include <sys/types.h>
 
 #include "c.h"

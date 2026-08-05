@@ -33,6 +33,10 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#if defined(__APPLE__)
+#include <apple/string.h>
+#endif
+
 #include "sort.h"
 
 #include "procps-private.h"

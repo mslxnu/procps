@@ -33,6 +33,11 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#if defined(__APPLE__)
+#include <apple/string.h>
+#include <apple/time.h>
+#endif
+
 #include "devname.h"
 #include "numa.h"
 #include "readproc.h"
@@ -41,7 +46,6 @@
 
 #include "procps-private.h"
 #include "pids.h"
-
 
 //#define UNREF_RPTHASH                // report hash details at uref() time
 

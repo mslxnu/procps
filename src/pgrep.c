@@ -51,6 +51,11 @@
 #ifdef HAVE_SYS_PIDFD_H
 #include <sys/pidfd.h>
 #endif
+
+#if defined(__APPLE__)
+#include <apple/signal.h>
+#endif
+
 /* EXIT_SUCCESS is 0 */
 /* EXIT_FAILURE is 1 */
 #define EXIT_USAGE 2

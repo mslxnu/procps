@@ -241,6 +241,39 @@ static void print_from(
             }
 
 #ifndef __CYGWIN__
+#ifdef __APPLE__
+	if (ip_addresses) { /* -i switch used */
+		struct in_addr ipv4_addr;
+		struct in6_addr ipv6_addr;
+
+		/* Attempt to parse u->ut_host as an IPv4 address string first */
+		if (inet_pton(AF_INET, u->ut_host, &ipv4_addr) == 1) {
+			if (!inet_ntop(AF_INET, &ipv4_addr, buf, sizeof(buf))) {
+				strcpy(buf, "");
+			}
+		/* If not IPv4, attempt to parse u->ut_host as an IPv6 address string */
+		} else if (inet_pton(AF_INET6, u->ut_host, &ipv6_addr) == 1) {
+			if (IN6_IS_ADDR_V4MAPPED(&ipv6_addr)) {
+				/* Map back: extract IPv4 portion from the end of the mapped address */
+				uint32_t ipv4_raw;
+				memcpy(&ipv4_raw, &ipv6_addr.s6_addr[12], sizeof(ipv4_raw));
+				if (!inet_ntop(AF_INET, &ipv4_raw, buf, sizeof(buf))) {
+					strcpy(buf, "");
+				}
+			} else {
+				/* Native IPv6 */
+				if (!inet_ntop(AF_INET6, &ipv6_addr, buf_ipv6, sizeof(buf_ipv6))) {
+					strcpy(buf, "");
+				} else {
+					strncpy(buf, buf_ipv6, fromlen);
+				}
+			}
+		} else {
+			/* u->ut_host is a hostname literal (e.g. "localhost"), not a direct IP */
+			strncpy(buf, u->ut_host, fromlen);
+			buf[fromlen - 1] = '\0'; /* Ensure null-termination */
+		}
+#else
 	int32_t ut_addr_v6[4];      /* IP address of the remote host */
 
 	if (ip_addresses) { /* -i switch used */
@@ -265,6 +298,7 @@ static void print_from(
 				strcpy(buf, ""); /* invalid address, clean the buffer */
 			}
 		}
+#endif
 		buf[fromlen] = '\0';
 
 		len = strlen(buf);

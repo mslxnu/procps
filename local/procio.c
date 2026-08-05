@@ -32,6 +32,11 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#if defined(__APPLE__)
+#include <apple/stdio.h>
+#include <apple/string.h>
+#endif
+
 typedef struct pcookie {
 	char	*buf;
 	size_t	count;

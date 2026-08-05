@@ -104,6 +104,26 @@ AC_FUNC_STRTOD
 usrbin_execdir='${exec_prefix}/bin'
 AC_SUBST([usrbin_execdir])
 
+AC_CANONICAL_HOST
+
+case "$host_os" in
+  darwin*)
+    apple=yes
+    prefix=/opt/usr
+    sysconfdir='${prefix}/etc'
+    libexecdir='${prefix}/lib'
+    localstatedir='${prefix}/var'
+    datadir='${prefix}/share'
+    mandir='${prefix}/share/man'
+    infodir='${prefix}/share/info'
+    ;;
+  *)
+    apple=no
+    ;;
+esac
+
+AM_CONDITIONAL([IS_APPLE], [test "$apple" = yes])
+
 if test "x$host_os" = xcygwin
 then
   prefix=/usr
@@ -357,6 +377,7 @@ AC_ARG_ENABLE([w],
 AM_CONDITIONAL(BUILD_W, test "x$enable_w" = xyes)
 
 AM_CONDITIONAL(LINUX, test "x$host_os" = xlinux-gnu)
+AM_CONDITIONAL(APPLE, test "x$host_os" = xapple)
 AM_CONDITIONAL(CYGWIN, test "x$host_os" = xcygwin)
 
 AC_ARG_ENABLE([skill],

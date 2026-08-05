@@ -37,6 +37,9 @@
 #include "procps-private.h"
 #include "vmstat.h"
 
+#if defined(__APPLE__)
+#include <apple/search.h>
+#endif
 
 #define VMSTAT_FILE  "/proc/vmstat"
 #define VMSTAT_BUFF  8192

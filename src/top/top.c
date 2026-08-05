@@ -47,6 +47,10 @@
 #include <sys/time.h>
 #include <sys/types.h>       // also available via <stdlib.h>
 
+#if defined(__APPLE__)
+#include <apple/time.h>
+#endif
+
 #include "fileutils.h"
 #include "signals.h"
 #include "nls.h"

@@ -32,6 +32,10 @@
 #include "strutils.h"
 #include "nls.h"
 
+#if defined(__APPLE__)
+#include <apple/signal.h>
+#endif
+
 /* kill help */
 static void __attribute__ ((__noreturn__)) print_usage(FILE * out)
 {

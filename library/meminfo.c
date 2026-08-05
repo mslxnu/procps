@@ -31,9 +31,12 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#if defined(__APPLE__)
+#include <apple/search.h>
+#endif
+
 #include "procps-private.h"
 #include "meminfo.h"
-
 
 #define MEMINFO_FILE  "/proc/meminfo"
 #define MEMINFO_BUFF  8192
